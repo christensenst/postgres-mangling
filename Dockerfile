@@ -18,7 +18,8 @@ RUN apt-get update && apt-get install -y \
     wget \
     curl \
     vim \
-    sudo
+    sudo \
+    gdb
 
 # get and unpack the postgres source code
 WORKDIR /opt
@@ -27,7 +28,7 @@ RUN gunzip postgresql-9.5.0.tar.gz
 RUN tar xf postgresql-9.5.0.tar
 WORKDIR /opt/postgresql-9.5.0
 
-# configure the souce tree for good debug options
+# configure the source tree for good debug options
 # see https://wiki.postgresql.org/wiki/Developer_FAQ#What_debugging_features_are_available.3F
 RUN ./configure --enable-cassert --enable-debug CFLAGS="-ggdb -Og -fno-omit-frame-pointer"
 
@@ -40,6 +41,3 @@ RUN mkdir /usr/local/pgsql/data
 RUN chown postgres /usr/local/pgsql/data
 ENV PATH=$PATH:/usr/local/pgsql/bin
 USER postgres
-RUN initdb -D /usr/local/pgsql/data
-RUN postgres -D /usr/local/pgsql/data >logfile 2>&1 & createdb test
-
